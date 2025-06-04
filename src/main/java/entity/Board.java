@@ -31,6 +31,8 @@ public class Board extends Timestamped {
         this.password = requestDto.getPassword(); // 오타 수정
     }
 
+
+
     public void update(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
