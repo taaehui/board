@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+
+        <meta charset="UTF-8">
+        <title>게시판</title>
+
+        <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        ul#boardList {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul#boardList li {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        </style>
+
+
+</head>
+<body>
+<h1>게시판</h1>
+
+<h2>게시글 작성</h2>
+<form id="boardForm">
+    <input type="text" id="title" placeholder="제목" required><br>
+    <textarea id="content" placeholder="내용" required></textarea><br>
+    <input type="text" id="writer" placeholder="작성자" required><br>
+    <button type="submit">작성</button>
+</form>
+
+<h2>게시글 목록</h2>
+<ul id="boardList"></ul>
+
+<script>
+    const API_BASE = "http://localhost:8080/boards";
+
+
+    function loadBoardList() {
+        fetch(API_BASE)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("boardList");
+                list.innerHTML = "";
+                data.forEach(post => {
+                    const li = document.createElement("li");
+                    li.textContent = `${post.title} - ${post.writer}`;
+                    list.appendChild(li);
+                });
+            });
+    }
+
+
+    document.getElementById("boardForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const title = document.getElementById("title").value;
+        const content = document.getElementById("content").value;
+        const writer = document.getElementById("writer").value;
+
+        fetch(API_BASE, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, content, writer })
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert("게시글이 등록되었습니다!");
+                    loadBoardList();
+                    this.reset();
+                } else {
+                    alert("등록 실패!");
+                }
+            });
+    });
+
+
+    window.onload = loadBoardList;
+</script>
+</body>
+</html>
